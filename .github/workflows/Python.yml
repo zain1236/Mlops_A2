@@ -27,7 +27,7 @@ jobs:
     - name: SSH into remote server
       uses: appleboy/ssh-action@master
       with:
-        host: 'http://34.93.128.96/'
+        host: '34.93.128.96/'
         username: 'musawhyne'
         password: '1234'
         script: |
