@@ -1,20 +1,34 @@
-# Importing flask module in the project is mandatory
-# An object of Flask class is our WSGI application.
-from flask import Flask, request
+# Import necessary libraries
+import yfinance as yf
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
-# current module (__name__) as argument.
-app = Flask(__name__)
+# Define the ticker symbol of the stock you want to train the model on
+ticker = 'AAPL'
 
-# The route() function of the Flask class is a decorator,
-# which tells the application which URL should call
-# the associated function.
-@app.route('/')
-def return_client_IP():
-    return 'Hello your IPv4 is: {}'.format(request.remote_addr)
+# Define the period of time for which you want to download the live data
+period = '12mo'
 
-# main driver function
-if __name__ == '__main__':
+# Download the live data using yfinance
+stock_data = yf.download(ticker, period=period)
 
- # run() method of Flask class runs the application
- # on the local development server.
- app.run(host='0.0.0.0', port=3003)
+# Split the live data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(stock_data.drop('Close', axis=1),
+                                                    stock_data['Close'],
+                                                    test_size=0.3,
+                                                    random_state=42)
+
+# Initialize a linear regression model
+model = LinearRegression()
+
+# Fit the model on the training data
+model.fit(X_train, y_train)
+
+# Predict the target variable for the testing set
+y_pred = model.predict(X_test)
+
+# Evaluate the model's performance using a suitable metric
+score = model.score(X_test, y_test)
+
+# Print the score
+print(f"Model score: {score}")
